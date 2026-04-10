@@ -151,10 +151,12 @@ export default function Issue() {
               <label htmlFor="ipfsHash">IPFS Hash</label>
               <input type="text" id="ipfsHash" name="ipfsHash" value={formData.ipfsHash} onChange={handleChange} placeholder="QmXxx..." />
             </div>
-            <div className="form-group">
+            {/* hiding the metadatUri option as we aren't converting our data into it first */}
+            {/* <div className="form-group">
               <label htmlFor="metadataURI">Metadata URI</label>
               <input type="text" id="metadataURI" name="metadataURI" value={formData.metadataURI} onChange={handleChange} placeholder="ipfs://..." />
-            </div>
+            </div> 
+            */}
           </div>
 
           <button type="submit" className="btn btn-primary btn-submit" disabled={isLoading}>
