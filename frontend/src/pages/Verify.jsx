@@ -26,35 +26,61 @@ export default function Verify() {
     setIsLoading(true);
     setResult(null);
 
-    try {
-      const [isValid, message] = await contract.verifyCertificate(tokenId);
+  try {
+      // 1. Get the blockchain's official status
+      const [contractIsValid, contractMessage] = await contract.verifyCertificate(tokenId);
       
-      if (isValid) {
-        const [certData, currentOwner] = await contract.getCertificateDetails(tokenId);
+      // 2. Fetch the data right away (as long as it exists, this will succeed)
+      const [certData, currentOwner] = await contract.getCertificateDetails(tokenId);
+      
+      // 3. Do our real-world time math to overcome the Hardhat Time Freeze
+      const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+      const isExpiredLocally = Number(certData.expiryDate) > 0 && currentTimeInSeconds > Number(certData.expiryDate);
+
+      // 4. Override the blockchain's frozen clock if necessary
+      let finalIsValid = contractIsValid;
+      let finalMessage = contractMessage;
+
+      if (isExpiredLocally && !certData.isRevoked) {
+        finalIsValid = false;
+        finalMessage = "Certificate has expired";
+      }
+
+      // 5. Package the details (we want to show these to the verifier no matter what!)
+      const certDetails = {
+        tokenId,
+        recipientName: certData.recipientName,
+        courseName: certData.courseName,
+        institutionName: certData.institutionName,
+        issueDate: certData.issueDate,
+        expiryDate: certData.expiryDate,
+        recipientAddress: certData.recipientAddress,
+        issuerAddress: certData.issuerAddress,
+        ipfsHash: certData.ipfsHash,
+        currentOwner
+      };
+      
+      // 6. Update the React state
+      if (finalIsValid) {
         setResult({
           isValid: true,
-          message,
-          certificate: {
-            tokenId,
-            recipientName: certData.recipientName,
-            courseName: certData.courseName,
-            institutionName: certData.institutionName,
-            issueDate: certData.issueDate,
-            expiryDate: certData.expiryDate,
-            recipientAddress: certData.recipientAddress,
-            issuerAddress: certData.issuerAddress,
-            ipfsHash: certData.ipfsHash,
-            currentOwner
-          }
+          message: "Certificate is Valid",
+          certificate: certDetails
         });
         toast.success('Certificate verified successfully!');
       } else {
-        setResult({ isValid: false, message });
-        toast.error(message);
+        setResult({ 
+          isValid: false, 
+          message: finalMessage, // This will say "Certificate has expired" or "Revoked"
+          certificate: certDetails 
+        });
+        toast.error(finalMessage);
       }
+      
     } catch (error) {
       console.error('Verification error:', error);
-      if (error.message.includes('Certificate does not exist')) {
+      // If the contract throws an error, it usually means the ID doesn't exist at all
+      if (error.message && error.message.includes('Certificate does not exist')) {
         setResult({ isValid: false, message: 'Certificate does not exist' });
         toast.error('Certificate not found');
       } else {

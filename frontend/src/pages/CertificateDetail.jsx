@@ -21,7 +21,21 @@ export default function CertificateDetail() {
     setLoading(true);
     try {
       const [certData, currentOwner] = await contract.getCertificateDetails(id);
-      const [isValid, message] = await contract.verifyCertificate(id);
+      const [contractIsValid, contractMessage] = await contract.verifyCertificate(id);
+
+      // Frontend Time Check for Expiry
+      const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+      const isExpiredLocally = Number(certData.expiryDate) > 0 && currentTimeInSeconds > Number(certData.expiryDate);
+
+
+      // Override the blockchain's frozen clock if necessary
+      let finalIsValid = contractIsValid;
+      let finalMessage = contractMessage;
+
+      if (isExpiredLocally && !certData.isRevoked) {
+        finalIsValid = false;
+        finalMessage = "Certificate has expired"; 
+      }
 
       setCertificate({
         tokenId: id,
@@ -35,8 +49,8 @@ export default function CertificateDetail() {
         isRevoked: certData.isRevoked,
         ipfsHash: certData.ipfsHash,
         currentOwner: currentOwner,
-        isValid: isValid,
-        statusMessage: message
+        isValid: finalIsValid,
+        statusMessage: finalMessage
       });
     } catch (error) {
       console.error('Error loading certificate:', error);

@@ -29,7 +29,12 @@ export default function Gallery() {
       for (let i = 0; i < Number(total); i++) {
         try {
           const [certData, currentOwner] = await contract.getCertificateDetails(i);
-          const [isValid] = await contract.verifyCertificate(i);
+          const [contractIsValid] = await contract.verifyCertificate(i);
+
+          // Frontend Time Check for Expiry
+          const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+          const isExpiredLocally = Number(certData.expiryDate) > 0 && currentTimeInSeconds > Number(certData.expiryDate);
+          const finalIsValid = contractIsValid && !isExpiredLocally;
           
           certs.push({
             tokenId: i,
@@ -43,7 +48,8 @@ export default function Gallery() {
             isRevoked: certData.isRevoked,
             ipfsHash: certData.ipfsHash,
             currentOwner: currentOwner,
-            isValid: isValid
+            isValid: finalIsValid,
+            isExpired: isExpiredLocally
           });
         } catch (err) {
           console.error(`Error loading certificate ${i}:`, err);
@@ -67,9 +73,12 @@ export default function Gallery() {
       case 'owned':
         return account && cert.currentOwner.toLowerCase() === account.toLowerCase();
       case 'valid':
-        return cert.isValid && !cert.isRevoked;
+        // Must be valid, NOT revoked, and NOT expired
+        return cert.isValid && !cert.isRevoked && !cert.isExpired;
       case 'revoked':
         return cert.isRevoked;
+      case 'expired':
+        return cert.isExpired && !cert.isRevoked;
       default:
         return true;
     }
@@ -127,6 +136,12 @@ export default function Gallery() {
             onClick={() => setFilter('valid')}
           >
             Valid ({certificates.filter(c => c.isValid && !c.isRevoked).length})
+          </button>
+          <button 
+            className={`filter-btn ${filter === 'expired' ? 'active' : ''}`}
+            onClick={() => setFilter('expired')}
+          >
+            Expired ({certificates.filter(c => c.isExpired && !c.isRevoked).length})
           </button>
           <button 
             className={`filter-btn ${filter === 'revoked' ? 'active' : ''}`}
