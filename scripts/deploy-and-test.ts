@@ -31,6 +31,7 @@ async function main() {
     "Tech University",
     0, // No expiry
     "QmTestHash123",
+    "ABCD2345EFGH6789JKLM",
     "ipfs://QmTestMetadata123"
   );
   await tx.wait();
@@ -47,6 +48,9 @@ async function main() {
   // Verify certificate
   const [isValid, message] = await certificate.verifyCertificate(0);
   console.log(`\nVerification: ${isValid ? "✅ Valid" : "❌ Invalid"} - ${message}`);
+
+  const [exists, tokenId] = await certificate.getTokenIdByVerificationCode("ABCD2345EFGH6789JKLM");
+  console.log(`Share code lookup: ${exists ? `token ${tokenId}` : "not found"}`);
   
   console.log("\n✅ All tests passed! Contract is working correctly.");
 }

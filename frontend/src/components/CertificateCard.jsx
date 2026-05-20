@@ -14,10 +14,12 @@ export default function CertificateCard({ certificate, onClick }) {
 
   const formatDate = (timestamp) => {
     if (!timestamp || timestamp === 0n) return 'No Expiry';
-    return new Date(Number(timestamp) * 1000).toLocaleDateString('en-US', {
+    return new Date(Number(timestamp) * 1000).toLocaleString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 

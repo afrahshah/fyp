@@ -4,7 +4,7 @@
 }
 
 .issue-container {
-  max-width: 700px;
+  max-width: 920px;
   margin: 0 auto;
 }
 
@@ -89,7 +89,19 @@
   transition: all 0.3s ease;
 }
 
-.form-group input:focus {
+.form-group select {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
   outline: none;
   border-color: #00d4ff;
   box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
@@ -104,6 +116,35 @@
   color: #64748b;
   font-size: 0.75rem;
   margin-top: 0.25rem;
+}
+
+.expiry-inputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.expiry-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.expiry-preview {
+  display: block;
+  margin-top: 0.75rem;
+  color: #cbd5e1;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 640px) {
+  .expiry-inputs {
+    grid-template-columns: 1fr;
+  }
 }
 
 .btn-submit {

@@ -31,12 +31,15 @@ contract Certificate is ERC721, ERC721URIStorage, ERC721Enumerable, AccessContro
         address issuerAddress;
         bool isRevoked;
         string ipfsHash; // For storing additional metadata/document
+        string verificationCode;
     }
 
     // ============ Mappings ============
     mapping(uint256 => CertificateData) public certificates;
     mapping(address => uint256[]) public recipientCertificates;
+    mapping(address => uint256[]) public issuerCertificates;
     mapping(string => bool) public usedIpfsHashes; // Prevent duplicate certificates
+    mapping(bytes32 => uint256) private verificationCodeToTokenIdPlusOne;
 
     // ============ Events ============
     event CertificateIssued(
@@ -100,6 +103,7 @@ contract Certificate is ERC721, ERC721URIStorage, ERC721Enumerable, AccessContro
      * @param institutionName Name of the issuing institution
      * @param expiryDate Expiry timestamp (0 for no expiry)
      * @param ipfsHash IPFS hash for additional certificate data/document
+     * @param verificationCode Unique public verification code for share links
      * @param metadataURI URI for the NFT metadata
      */
     function issueCertificate(
@@ -109,6 +113,7 @@ contract Certificate is ERC721, ERC721URIStorage, ERC721Enumerable, AccessContro
         string memory institutionName,
         uint256 expiryDate,
         string memory ipfsHash,
+        string memory verificationCode,
         string memory metadataURI
     ) external onlyRole(ISSUER_ROLE) returns (uint256) {
         require(recipient != address(0), "Invalid recipient address");
@@ -116,6 +121,10 @@ contract Certificate is ERC721, ERC721URIStorage, ERC721Enumerable, AccessContro
         require(bytes(courseName).length > 0, "Course name required");
         require(bytes(institutionName).length > 0, "Institution name required");
         require(!usedIpfsHashes[ipfsHash] || bytes(ipfsHash).length == 0, "Certificate already exists");
+        require(bytes(verificationCode).length > 0, "Verification code required");
+
+        bytes32 verificationCodeHash = keccak256(bytes(verificationCode));
+        require(verificationCodeToTokenIdPlusOne[verificationCodeHash] == 0, "Verification code already exists");
         
         if (expiryDate > 0) {
             require(expiryDate > block.timestamp, "Expiry must be in future");
@@ -134,7 +143,8 @@ contract Certificate is ERC721, ERC721URIStorage, ERC721Enumerable, AccessContro
             recipientAddress: recipient,
             issuerAddress: msg.sender,
             isRevoked: false,
-            ipfsHash: ipfsHash
+            ipfsHash: ipfsHash,
+            verificationCode: verificationCode
         });
 
         // Mark IPFS hash as used
@@ -144,6 +154,8 @@ contract Certificate is ERC721, ERC721URIStorage, ERC721Enumerable, AccessContro
 
         // Add to recipient's certificate list
         recipientCertificates[recipient].push(tokenId);
+        issuerCertificates[msg.sender].push(tokenId);
+        verificationCodeToTokenIdPlusOne[verificationCodeHash] = tokenId + 1;
 
         // Mint the NFT
         _safeMint(recipient, tokenId);
@@ -188,6 +200,10 @@ contract Certificate is ERC721, ERC721URIStorage, ERC721Enumerable, AccessContro
      * @return message Verification status message
      */
     function verifyCertificate(uint256 tokenId) external view returns (bool isValid, string memory message) {
+        return _verifyCertificate(tokenId);
+    }
+
+    function _verifyCertificate(uint256 tokenId) internal view returns (bool isValid, string memory message) {
         // Check if certificate exists
         if (_ownerOf(tokenId) == address(0)) {
             return (false, "Certificate does not exist");
@@ -209,6 +225,44 @@ contract Certificate is ERC721, ERC721URIStorage, ERC721Enumerable, AccessContro
     }
 
     /**
+     * @dev Resolve a verification code to a certificate token ID
+     * @param verificationCode Verification code of the certificate
+     * @return exists Whether a certificate exists for this code
+     * @return tokenId Resolved token ID when the code exists
+     */
+    function getTokenIdByVerificationCode(string memory verificationCode) external view returns (bool exists, uint256 tokenId) {
+        uint256 tokenIdPlusOne = verificationCodeToTokenIdPlusOne[keccak256(bytes(verificationCode))];
+
+        if (tokenIdPlusOne == 0) {
+            return (false, 0);
+        }
+
+        return (true, tokenIdPlusOne - 1);
+    }
+
+    /**
+     * @dev Verify if a certificate is valid by its public verification code
+     * @param verificationCode Verification code of the certificate
+     * @return isValid Whether the certificate is valid
+     * @return message Verification status message
+     * @return tokenId Resolved token ID when the code exists
+     */
+    function verifyCertificateByCode(string memory verificationCode)
+        external
+        view
+        returns (bool isValid, string memory message, uint256 tokenId)
+    {
+        uint256 tokenIdPlusOne = verificationCodeToTokenIdPlusOne[keccak256(bytes(verificationCode))];
+
+        if (tokenIdPlusOne == 0) {
+            return (false, "Certificate does not exist", 0);
+        }
+
+        tokenId = tokenIdPlusOne - 1;
+        (isValid, message) = _verifyCertificate(tokenId);
+    }
+
+    /**
      * @dev Get full certificate details
      * @param tokenId Token ID of the certificate
      */
@@ -224,6 +278,14 @@ contract Certificate is ERC721, ERC721URIStorage, ERC721Enumerable, AccessContro
      */
     function getCertificatesByRecipient(address recipient) external view returns (uint256[] memory) {
         return recipientCertificates[recipient];
+    }
+
+    /**
+     * @dev Get all certificate IDs issued by an issuer
+     * @param issuer Address of the issuer
+     */
+    function getCertificatesByIssuer(address issuer) external view returns (uint256[] memory) {
+        return issuerCertificates[issuer];
     }
 
     /**

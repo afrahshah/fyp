@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useWeb3 } from '../hooks/useWeb3';
+import CertificateSharePanel from '../components/CertificateSharePanel';
 import toast from 'react-hot-toast';
 import './CertificateDetail.css';
 
@@ -48,6 +49,7 @@ export default function CertificateDetail() {
         issuerAddress: certData.issuerAddress,
         isRevoked: certData.isRevoked,
         ipfsHash: certData.ipfsHash,
+        verificationCode: certData.verificationCode,
         currentOwner: currentOwner,
         isValid: finalIsValid,
         statusMessage: finalMessage
@@ -87,7 +89,7 @@ export default function CertificateDetail() {
 
   const formatDate = (timestamp) => {
     if (!timestamp || timestamp === 0n) return 'No Expiry';
-    return new Date(Number(timestamp) * 1000).toLocaleDateString('en-US', {
+    return new Date(Number(timestamp) * 1000).toLocaleString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -273,6 +275,15 @@ export default function CertificateDetail() {
                   <span className="value ipfs">{certificate.ipfsHash}</span>
                 </div>
               </div>
+            )}
+
+            {certificate.verificationCode && (
+              <CertificateSharePanel
+                tokenId={certificate.tokenId}
+                verificationCode={certificate.verificationCode}
+                title="Public Verification Access"
+                subtitle="Share this verifier link, QR, or code so others can validate the certificate without MetaMask."
+              />
             )}
 
             {/* Actions */}

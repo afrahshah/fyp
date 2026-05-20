@@ -6,6 +6,7 @@ A blockchain-based certificate issuance and verification platform using NFTs. Bu
 
 - **Issue Certificates** - Create tamper-proof digital certificates as NFTs
 - **Verify Certificates** - Instantly verify any certificate's authenticity
+- **Public Share Links** - Generate a verification code, share link, and QR for every issued certificate
 - **Gallery View** - Browse all issued certificates
 - **Admin Panel** - Manage issuers and roles
 - **Role-Based Access** - Admin and Issuer roles for access control
@@ -131,7 +132,7 @@ All 14 tests should pass:
 ### Verify a Certificate
 
 1. Click "Verify" in navbar
-2. Enter Certificate ID (starts from 0)
+2. Paste the share link, scan the QR, or enter the verification code
 3. Click "Verify"
 4. See verification result and certificate details
 
@@ -178,7 +179,9 @@ moti/
 
 | Function                  | Description                   |
 | ------------------------- | ----------------------------- |
-| `issueCertificate()`      | Issue a new certificate NFT   |
+| `issueCertificate()`      | Issue a new certificate NFT with a public verification code   |
+| `verifyCertificateByCode()` | Verify certificate validity by public share code |
+| `getTokenIdByVerificationCode()` | Resolve a public share code to a token ID |
 | `verifyCertificate()`     | Verify certificate validity   |
 | `revokeCertificate()`     | Revoke a certificate          |
 | `getCertificateDetails()` | Get full certificate data     |

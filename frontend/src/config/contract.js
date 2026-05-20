@@ -1,3 +1,20 @@
+// Network configurations
+export const NETWORKS = {
+  hardhat: {
+    chainId: 31337,
+    name: "Hardhat Local",
+    rpcUrl: "http://127.0.0.1:8545"
+  },
+  sepolia: {
+    chainId: 11155111,
+    name: "Sepolia Testnet",
+    rpcUrl: "https://sepolia.infura.io/v3/YOUR_INFURA_KEY"
+  }
+};
+
+export const DEFAULT_NETWORK = NETWORKS.hardhat;
+export const READ_ONLY_RPC_URL = import.meta.env.VITE_RPC_URL || DEFAULT_NETWORK.rpcUrl;
+
 // Contract configuration
 // Update CONTRACT_ADDRESS after deploying to your network
 export const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // Default Hardhat local deployment address
@@ -20,11 +37,14 @@ export const CONTRACT_ABI = [
   "function tokenByIndex(uint256 index) view returns (uint256)",
   
   // Certificate Functions
-  "function certificates(uint256) view returns (string recipientName, string courseName, string institutionName, uint256 issueDate, uint256 expiryDate, address recipientAddress, address issuerAddress, bool isRevoked, string ipfsHash)",
-  "function getCertificateDetails(uint256 tokenId) view returns (tuple(string recipientName, string courseName, string institutionName, uint256 issueDate, uint256 expiryDate, address recipientAddress, address issuerAddress, bool isRevoked, string ipfsHash) certData, address currentOwner)",
+  "function certificates(uint256) view returns (string recipientName, string courseName, string institutionName, uint256 issueDate, uint256 expiryDate, address recipientAddress, address issuerAddress, bool isRevoked, string ipfsHash, string verificationCode)",
+  "function getCertificateDetails(uint256 tokenId) view returns (tuple(string recipientName, string courseName, string institutionName, uint256 issueDate, uint256 expiryDate, address recipientAddress, address issuerAddress, bool isRevoked, string ipfsHash, string verificationCode) certData, address currentOwner)",
   "function getCertificatesByRecipient(address recipient) view returns (uint256[])",
+  "function getCertificatesByIssuer(address issuer) view returns (uint256[])",
   "function getTotalCertificates() view returns (uint256)",
+  "function getTokenIdByVerificationCode(string verificationCode) view returns (bool exists, uint256 tokenId)",
   "function verifyCertificate(uint256 tokenId) view returns (bool isValid, string message)",
+  "function verifyCertificateByCode(string verificationCode) view returns (bool isValid, string message, uint256 tokenId)",
   
   // Role Functions
   "function isIssuer(address account) view returns (bool)",
@@ -34,7 +54,7 @@ export const CONTRACT_ABI = [
   "function hasRole(bytes32 role, address account) view returns (bool)",
   
   // Write Functions
-  "function issueCertificate(address recipient, string recipientName, string courseName, string institutionName, uint256 expiryDate, string ipfsHash, string metadataURI) returns (uint256)",
+  "function issueCertificate(address recipient, string recipientName, string courseName, string institutionName, uint256 expiryDate, string ipfsHash, string verificationCode, string metadataURI) returns (uint256)",
   "function revokeCertificate(uint256 tokenId)",
   "function addIssuer(address issuer)",
   "function removeIssuer(address issuer)",
@@ -44,19 +64,3 @@ export const CONTRACT_ABI = [
   "function transferFrom(address from, address to, uint256 tokenId)",
   "function safeTransferFrom(address from, address to, uint256 tokenId)"
 ];
-
-// Network configurations
-export const NETWORKS = {
-  hardhat: {
-    chainId: 31337,
-    name: "Hardhat Local",
-    rpcUrl: "http://127.0.0.1:8545"
-  },
-  sepolia: {
-    chainId: 11155111,
-    name: "Sepolia Testnet",
-    rpcUrl: "https://sepolia.infura.io/v3/YOUR_INFURA_KEY"
-  }
-};
-
-export const DEFAULT_NETWORK = NETWORKS.hardhat;
