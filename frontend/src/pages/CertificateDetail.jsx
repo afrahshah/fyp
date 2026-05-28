@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useWeb3 } from '../hooks/useWeb3';
+import { getReadOnlyContract } from '../utils/readOnlyContract';
 import CertificateSharePanel from '../components/CertificateSharePanel';
 import toast from 'react-hot-toast';
 import './CertificateDetail.css';
@@ -14,15 +15,16 @@ export default function CertificateDetail() {
   const [revoking, setRevoking] = useState(false);
 
   const loadCertificate = useCallback(async () => {
-    if (!contract || !id) {
+    if (!id) {
       setLoading(false);
       return;
     }
 
     setLoading(true);
     try {
-      const [certData, currentOwner] = await contract.getCertificateDetails(id);
-      const [contractIsValid, contractMessage] = await contract.verifyCertificate(id);
+      const activeContract = contract ?? getReadOnlyContract();
+      const [certData, currentOwner] = await activeContract.getCertificateDetails(id);
+      const [contractIsValid, contractMessage] = await activeContract.verifyCertificate(id);
 
       // Frontend Time Check for Expiry
       const currentTimeInSeconds = Math.floor(Date.now() / 1000);
@@ -68,6 +70,11 @@ export default function CertificateDetail() {
   }, [loadCertificate]);
 
   const handleRevoke = async () => {
+    if (!contract) {
+      toast.error('Connect an authorized wallet to revoke this certificate');
+      return;
+    }
+
     if (!window.confirm('Are you sure you want to revoke this certificate? This action cannot be undone.')) {
       return;
     }
@@ -281,8 +288,8 @@ export default function CertificateDetail() {
               <CertificateSharePanel
                 tokenId={certificate.tokenId}
                 verificationCode={certificate.verificationCode}
-                title="Public Verification Access"
-                subtitle="Share this verifier link, QR, or code so others can validate the certificate without MetaMask."
+                title="Public Verification Code"
+                subtitle="Use this verification code in the public verifier to validate the certificate without MetaMask."
               />
             )}
 

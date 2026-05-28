@@ -103,7 +103,7 @@ contract Certificate is ERC721, ERC721URIStorage, ERC721Enumerable, AccessContro
      * @param institutionName Name of the issuing institution
      * @param expiryDate Expiry timestamp (0 for no expiry)
      * @param ipfsHash IPFS hash for additional certificate data/document
-     * @param verificationCode Unique public verification code for share links
+     * @param verificationCode Unique public verification code
      * @param metadataURI URI for the NFT metadata
      */
     function issueCertificate(

@@ -313,8 +313,8 @@ describe("Certificate Contract", function () {
         "ipfs://QmExpiryMetadata123456789"
       );
 
-      await network.provider.send("evm_setNextBlockTimestamp", [futureExpiry + 1]);
-      await network.provider.send("evm_mine");
+      await ethers.provider.send("evm_setNextBlockTimestamp", [futureExpiry + 1]);
+      await ethers.provider.send("evm_mine", []);
 
       const [isValid, message, tokenId] = await certificate.verifyCertificateByCode("EXPY2345EFGH6789JKLM");
       expect(isValid).to.be.false;

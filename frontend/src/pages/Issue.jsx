@@ -287,7 +287,7 @@ export default function Issue() {
             tokenId={issuedCertificate.tokenId}
             verificationCode={issuedCertificate.verificationCode}
             title="Certificate Issued"
-            subtitle="Share this verifier link, code, or QR with anyone who needs to validate the certificate."
+            subtitle="Give this verification code to anyone who needs to validate the certificate."
           />
         )}
       </div>

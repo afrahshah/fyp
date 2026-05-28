@@ -64,7 +64,7 @@ export default function Home() {
           <div className="feature-card">
             <div className="feature-icon">⚡</div>
             <h3>Instant Verification</h3>
-            <p>Verify any certificate in seconds with a share link, verification code, or QR scan.</p>
+            <p>Verify any certificate in seconds with a public verification code.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">🌐</div>
@@ -85,7 +85,7 @@ export default function Home() {
           <div className="step">
             <div className="step-number">1</div>
             <h3>Share Securely</h3>
-            <p>Each issued certificate gets a public verification code, link, and QR</p>
+            <p>Each issued certificate gets a public verification code</p>
           </div>
           <div className="step-arrow">→</div>
           <div className="step">

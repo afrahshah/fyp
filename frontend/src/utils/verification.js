@@ -22,20 +22,6 @@ export function normalizeVerificationCode(rawValue) {
     return '';
   }
 
-  try {
-    const parsedUrl = new URL(
-      trimmed,
-      typeof window === 'undefined' ? 'http://localhost' : window.location.origin
-    );
-    const codeFromQuery = parsedUrl.searchParams.get('code');
-
-    if (codeFromQuery) {
-      return normalizeVerificationCode(codeFromQuery);
-    }
-  } catch {
-    // Non-URL input falls through to canonical normalization.
-  }
-
   return trimmed
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, '');
@@ -48,16 +34,6 @@ export function formatVerificationCode(code) {
     new RegExp(`(.{${VERIFICATION_GROUP_SIZE}})`, 'g'),
     '$1-'
   ).replace(/-$/, '');
-}
-
-export function buildShareLink(code) {
-  const normalizedCode = normalizeVerificationCode(code);
-
-  if (typeof window === 'undefined') {
-    return `/verify?code=${encodeURIComponent(normalizedCode)}`;
-  }
-
-  return `${window.location.origin}/verify?code=${encodeURIComponent(normalizedCode)}`;
 }
 
 export function getVerificationCodeLength() {
