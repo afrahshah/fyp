@@ -17,9 +17,7 @@ describe("Certificate Contract", function () {
     courseName: "Blockchain Development",
     institutionName: "Tech University",
     expiryDate: 0,
-    ipfsHash: "QmTestHash123456789",
-    verificationCode: "ABCD2345EFGH6789JKLM",
-    tokenURI: "ipfs://QmTestMetadata123456789"
+    verificationCode: "ABCD2345EFGH6789JKLM"
   };
 
   beforeEach(async function () {
@@ -85,9 +83,7 @@ describe("Certificate Contract", function () {
         sampleCertificate.courseName,
         sampleCertificate.institutionName,
         sampleCertificate.expiryDate,
-        sampleCertificate.ipfsHash,
-        sampleCertificate.verificationCode,
-        sampleCertificate.tokenURI
+        sampleCertificate.verificationCode
       );
 
       await expect(tx).to.emit(certificate, "CertificateIssued");
@@ -102,9 +98,7 @@ describe("Certificate Contract", function () {
         sampleCertificate.courseName,
         sampleCertificate.institutionName,
         sampleCertificate.expiryDate,
-        sampleCertificate.ipfsHash,
-        sampleCertificate.verificationCode,
-        sampleCertificate.tokenURI
+        sampleCertificate.verificationCode
       );
 
       const [certData, currentOwner] = await certificate.getCertificateDetails(0);
@@ -126,9 +120,7 @@ describe("Certificate Contract", function () {
         sampleCertificate.courseName,
         sampleCertificate.institutionName,
         sampleCertificate.expiryDate,
-        sampleCertificate.ipfsHash,
-        sampleCertificate.verificationCode,
-        sampleCertificate.tokenURI
+        sampleCertificate.verificationCode
       );
 
       const certificateIds = await certificate.getCertificatesByRecipient(recipient.address);
@@ -142,9 +134,7 @@ describe("Certificate Contract", function () {
         sampleCertificate.courseName,
         sampleCertificate.institutionName,
         sampleCertificate.expiryDate,
-        sampleCertificate.ipfsHash,
-        sampleCertificate.verificationCode,
-        sampleCertificate.tokenURI
+        sampleCertificate.verificationCode
       );
 
       const certificateIds = await certificate.getCertificatesByIssuer(owner.address);
@@ -161,9 +151,7 @@ describe("Certificate Contract", function () {
         sampleCertificate.courseName,
         sampleCertificate.institutionName,
         sampleCertificate.expiryDate,
-        sampleCertificate.ipfsHash,
-        sampleCertificate.verificationCode,
-        sampleCertificate.tokenURI
+        sampleCertificate.verificationCode
       );
 
       await certificate.connect(issuer).issueCertificate(
@@ -172,9 +160,7 @@ describe("Certificate Contract", function () {
         "Smart Contract Security",
         "Tech University",
         0,
-        "QmIssuerTwoHash123456789",
-        "WXYZ2345EFGH6789JKLM",
-        "ipfs://QmIssuerTwoMetadata123456789"
+        "WXYZ2345EFGH6789JKLM"
       );
 
       await certificate.connect(secondIssuer).issueCertificate(
@@ -183,9 +169,7 @@ describe("Certificate Contract", function () {
         "Frontend Development",
         "Tech University",
         0,
-        "QmIssuerThreeHash123456789",
-        "QRST2345EFGH6789JKLM",
-        "ipfs://QmIssuerThreeMetadata123456789"
+        "QRST2345EFGH6789JKLM"
       );
 
       expect(await certificate.getCertificatesByIssuer(owner.address)).to.deep.equal([0n]);
@@ -201,9 +185,7 @@ describe("Certificate Contract", function () {
           sampleCertificate.courseName,
           sampleCertificate.institutionName,
           sampleCertificate.expiryDate,
-          sampleCertificate.ipfsHash,
-          sampleCertificate.verificationCode,
-          sampleCertificate.tokenURI
+          sampleCertificate.verificationCode
         )
       ).to.be.revert(ethers);
     });
@@ -215,9 +197,7 @@ describe("Certificate Contract", function () {
         sampleCertificate.courseName,
         sampleCertificate.institutionName,
         sampleCertificate.expiryDate,
-        sampleCertificate.ipfsHash,
-        sampleCertificate.verificationCode,
-        sampleCertificate.tokenURI
+        sampleCertificate.verificationCode
       );
 
       await expect(
@@ -227,9 +207,7 @@ describe("Certificate Contract", function () {
           "Solidity Security",
           "Tech University",
           0,
-          "QmDifferentHash987654321",
-          sampleCertificate.verificationCode,
-          "ipfs://QmDifferentMetadata987654321"
+          sampleCertificate.verificationCode
         )
       ).to.be.revertedWith("Verification code already exists");
     });
@@ -243,9 +221,7 @@ describe("Certificate Contract", function () {
         sampleCertificate.courseName,
         sampleCertificate.institutionName,
         sampleCertificate.expiryDate,
-        sampleCertificate.ipfsHash,
-        sampleCertificate.verificationCode,
-        sampleCertificate.tokenURI
+        sampleCertificate.verificationCode
       );
     });
 
@@ -308,9 +284,7 @@ describe("Certificate Contract", function () {
         "Auditing",
         "Tech University",
         futureExpiry,
-        "QmExpiryHash123456789",
-        "EXPY2345EFGH6789JKLM",
-        "ipfs://QmExpiryMetadata123456789"
+        "EXPY2345EFGH6789JKLM"
       );
 
       await ethers.provider.send("evm_setNextBlockTimestamp", [futureExpiry + 1]);
@@ -331,9 +305,7 @@ describe("Certificate Contract", function () {
         sampleCertificate.courseName,
         sampleCertificate.institutionName,
         sampleCertificate.expiryDate,
-        sampleCertificate.ipfsHash,
-        sampleCertificate.verificationCode,
-        sampleCertificate.tokenURI
+        sampleCertificate.verificationCode
       );
     });
 

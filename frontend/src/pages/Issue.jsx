@@ -12,12 +12,14 @@ const TIME_OPTIONS = [
   ...Array.from({ length: 48 }, (_, index) => {
     const hours = Math.floor(index / 2);
     const minutes = index % 2 === 0 ? '00' : '30';
+    // Use standard template literal backticks
     const value = `${hours.toString().padStart(2, '0')}:${minutes}`;
     const hour12 = hours % 12 || 12;
     const meridiem = hours < 12 ? 'AM' : 'PM';
 
     return {
       value,
+      // Use standard template literal backticks
       label: `${hour12.toString().padStart(2, '0')}:${minutes} ${meridiem}`
     };
   }).filter((option) => option.value !== DEFAULT_EXPIRY_TIME)
@@ -33,9 +35,7 @@ export default function Issue() {
     courseName: '',
     institutionName: '',
     expiryDate: '',
-    expiryTime: '',
-    ipfsHash: '',
-    metadataURI: ''
+    expiryTime: ''
   });
 
   const handleChange = (e) => {
@@ -125,9 +125,7 @@ export default function Issue() {
         formData.courseName,
         formData.institutionName,
         expiryTimestamp,
-        formData.ipfsHash || '',
-        verificationCode,
-        formData.metadataURI || ''
+        verificationCode
       );
 
       toast.loading('Transaction submitted...', { id: 'issue' });
@@ -154,9 +152,7 @@ export default function Issue() {
         courseName: '',
         institutionName: '',
         expiryDate: '',
-        expiryTime: '',
-        ipfsHash: '',
-        metadataURI: ''
+        expiryTime: ''
       });
 
     } catch (error) {
@@ -263,7 +259,6 @@ export default function Issue() {
             </div>
           </div>
 
-
           <button type="submit" className="btn btn-primary btn-submit" disabled={isLoading}>
             {isLoading ? 'Issuing...' : 'Issue Certificate'}
           </button>
@@ -280,4 +275,4 @@ export default function Issue() {
       </div>
     </div>
   );
-}
+} 
