@@ -8,6 +8,7 @@ import {
   formatVerificationCode,
   normalizeVerificationCode
 } from '../utils/verification';
+import { getWeb3ErrorMessage } from '../utils/web3Errors';
 import './Verify.css';
 
 export default function Verify() {
@@ -56,7 +57,7 @@ export default function Verify() {
     setVerificationInput(formatVerificationCode(canonicalCode));
 
     try {
-      const contract = getReadOnlyContract();
+      const contract = await getReadOnlyContract();
       const [contractIsValid, contractMessage, resolvedTokenId] = await contract.verifyCertificateByCode(canonicalCode);
 
       if (!contractIsValid && contractMessage === 'Certificate does not exist') {
@@ -110,10 +111,18 @@ export default function Verify() {
         }
       }
     } catch (error) {
-      console.error('Verification error:', error);
-      setResult({ isValid: false, message: 'Error verifying certificate' });
+      const errorMessage = getWeb3ErrorMessage(
+        error,
+        'Unable to verify the certificate right now'
+      );
+
+      console.error('Verification error:', {
+        error,
+        verificationCode: canonicalCode
+      });
+      setResult({ isValid: false, message: errorMessage });
       if (shouldToast) {
-        toast.error('Error verifying certificate');
+        toast.error(errorMessage);
       }
     } finally {
       setIsLoading(false);

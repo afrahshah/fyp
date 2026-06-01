@@ -4,6 +4,7 @@ import { useWeb3 } from '../hooks/useWeb3';
 import { getReadOnlyContract } from '../utils/readOnlyContract';
 import CertificateSharePanel from '../components/CertificateSharePanel';
 import toast from 'react-hot-toast';
+import { getWeb3ErrorMessage } from '../utils/web3Errors';
 import './CertificateDetail.css';
 
 export default function CertificateDetail() {
@@ -22,7 +23,7 @@ export default function CertificateDetail() {
 
     setLoading(true);
     try {
-      const activeContract = contract ?? getReadOnlyContract();
+      const activeContract = contract ?? await getReadOnlyContract();
       const [certData, currentOwner] = await activeContract.getCertificateDetails(id);
       const [contractIsValid, contractMessage] = await activeContract.verifyCertificate(id);
 
@@ -58,7 +59,7 @@ export default function CertificateDetail() {
       });
     } catch (error) {
       console.error('Error loading certificate:', error);
-      toast.error('Certificate not found');
+      toast.error(getWeb3ErrorMessage(error, 'Certificate not found'));
       navigate('/gallery');
     } finally {
       setLoading(false);
@@ -88,7 +89,10 @@ export default function CertificateDetail() {
       loadCertificate();
     } catch (error) {
       console.error('Error revoking:', error);
-      toast.error(error.reason || 'Failed to revoke certificate', { id: 'revoke' });
+      toast.error(
+        getWeb3ErrorMessage(error, 'Failed to revoke certificate'),
+        { id: 'revoke' }
+      );
     } finally {
       setRevoking(false);
     }

@@ -30,6 +30,27 @@ function normalizeKnownMessage(message) {
     return 'Certificate already exists';
   }
 
+  if (
+    message.includes('404 not found') ||
+    message.includes('failed to fetch') ||
+    message.includes('fetch failed') ||
+    message.includes('network error') ||
+    message.includes('request timeout') ||
+    message.includes('timeout') ||
+    message.includes('unable to connect to a sepolia read-only rpc') ||
+    message.includes('rpc responded with')
+  ) {
+    return 'Unable to reach the Sepolia network right now';
+  }
+
+  if (
+    message.includes('could not decode result data') ||
+    message.includes('bad data') ||
+    message.includes('no matching fragment')
+  ) {
+    return 'The configured contract does not match the expected certificate verifier interface';
+  }
+
   if (message.includes('accesscontrol') || message.includes('not authorized')) {
     return 'You are not authorized to issue certificates';
   }

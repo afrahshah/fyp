@@ -3,6 +3,7 @@ import { useWeb3 } from '../hooks/useWeb3';
 import toast from 'react-hot-toast';
 import CertificateSharePanel from '../components/CertificateSharePanel';
 import { generateVerificationCode } from '../utils/verification';
+import { getWeb3ErrorMessage } from '../utils/web3Errors';
 import './Issue.css';
 
 const DEFAULT_EXPIRY_TIME = '23:59';
@@ -157,7 +158,10 @@ export default function Issue() {
 
     } catch (error) {
       console.error('Issue error:', error);
-      toast.error(error.reason || 'Failed to issue certificate', { id: 'issue' });
+      toast.error(
+        getWeb3ErrorMessage(error, 'Failed to issue certificate'),
+        { id: 'issue' }
+      );
     } finally {
       setIsLoading(false);
     }
