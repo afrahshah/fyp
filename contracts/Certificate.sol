@@ -30,7 +30,6 @@ contract Certificate is ERC721, ERC721URIStorage, ERC721Enumerable, AccessContro
         address recipientAddress;
         address issuerAddress;
         bool isRevoked;
-        string ipfsHash; // For storing additional metadata/document
         string verificationCode;
     }
 
@@ -143,7 +142,6 @@ contract Certificate is ERC721, ERC721URIStorage, ERC721Enumerable, AccessContro
             recipientAddress: recipient,
             issuerAddress: msg.sender,
             isRevoked: false,
-            ipfsHash: ipfsHash,
             verificationCode: verificationCode
         });
 
