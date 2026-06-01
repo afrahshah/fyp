@@ -5,7 +5,7 @@ async function main() {
     const { ethers } = await network.connect();
 
     // Use your newly deployed 6-parameter contract address
-    const contractAddress = "0x1Dccf534569BE71D4BaA063c8Ad97C256b0cA681";
+    const contractAddress = "0x05cE48785649226C726c1aece7531E145C8b06e4";
 
     const contract = await ethers.getContractAt("Certificate", contractAddress);
     

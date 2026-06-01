@@ -22,7 +22,7 @@ export const READ_ONLY_RPC_URL = import.meta.env.VITE_RPC_URL || DEFAULT_NETWORK
 
 // Contract configuration
 // CHANGE 2: Replace this placeholder with your real Sepolia 0x... address!
-export const CONTRACT_ADDRESS = "0x1Dccf534569BE71D4BaA063c8Ad97C256b0cA681"; 
+export const CONTRACT_ADDRESS = "0x05cE48785649226C726c1aece7531E145C8b06e4"; 
 
 // CHANGE 3: Automatically use the ABI from the imported JSON
 export const CONTRACT_ABI = CertificateABI.abi;
