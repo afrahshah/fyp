@@ -59,12 +59,10 @@ export default function CertificateCard({ certificate, onClick }) {
           <span className="label">Issued</span>
           <span className="date">{formatDate(issueDate)}</span>
         </div>
-        {expiryDate && expiryDate !== 0n && (
-          <div className="date-info">
-            <span className="label">Expires</span>
-            <span className="date">{formatDate(expiryDate)}</span>
-          </div>
-        )}
+        <div className="date-info">
+          <span className="label">Expires</span>
+          <span className="date">{formatDate(expiryDate)}</span>
+        </div>
       </div>
     </div>
   );

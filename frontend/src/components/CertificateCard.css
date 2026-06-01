@@ -7,6 +7,9 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .certificate-card::before {
@@ -72,6 +75,7 @@
 .card-body {
   text-align: center;
   padding: 1rem 0;
+  flex: 1;
 }
 
 .cert-icon {
@@ -116,11 +120,13 @@
   padding-top: 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: 1rem;
+  gap: 1rem;
 }
 
 .date-info {
   text-align: center;
   flex: 1;
+  min-width: 0;
 }
 
 .date-info .label {
@@ -134,4 +140,5 @@
 .date-info .date {
   color: #94a3b8;
   font-size: 0.75rem;
+  display: block;
 }
