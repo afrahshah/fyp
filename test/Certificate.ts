@@ -3,6 +3,10 @@ import { network } from "hardhat";
 
 const { ethers } = await network.connect();
 
+function toBytes32(value: string) {
+  return ethers.encodeBytes32String(value);
+}
+
 describe("Certificate Contract", function () {
   let certificate: any;
   let owner: any;
@@ -60,7 +64,7 @@ describe("Certificate Contract", function () {
 
     it("Should allow admin to remove an issuer", async function () {
       await certificate.addIssuer(issuer.address);
-      
+
       await expect(certificate.removeIssuer(issuer.address))
         .to.emit(certificate, "IssuerRemoved")
         .withArgs(issuer.address, owner.address);
@@ -71,20 +75,26 @@ describe("Certificate Contract", function () {
     it("Should not allow non-admin to add issuer", async function () {
       await expect(
         certificate.connect(otherUser).addIssuer(issuer.address)
-      ).to.be.revert(ethers);
+      ).to.be.reverted;
     });
   });
 
   describe("Certificate Issuance", function () {
-    it("Should allow issuer to issue a certificate", async function () {
-      const tx = await certificate.issueCertificate(
+    async function issueSampleCertificate(overrides: Partial<typeof sampleCertificate> = {}) {
+      const cert = { ...sampleCertificate, ...overrides };
+
+      return certificate.issueCertificate(
         recipient.address,
-        sampleCertificate.recipientName,
-        sampleCertificate.courseName,
-        sampleCertificate.institutionName,
-        sampleCertificate.expiryDate,
-        sampleCertificate.verificationCode
+        toBytes32(cert.recipientName),
+        toBytes32(cert.courseName),
+        toBytes32(cert.institutionName),
+        cert.expiryDate,
+        toBytes32(cert.verificationCode)
       );
+    }
+
+    it("Should allow issuer to issue a certificate", async function () {
+      const tx = await issueSampleCertificate();
 
       await expect(tx).to.emit(certificate, "CertificateIssued");
       expect(await certificate.getTotalCertificates()).to.equal(1);
@@ -92,50 +102,29 @@ describe("Certificate Contract", function () {
     });
 
     it("Should store certificate data correctly", async function () {
-      await certificate.issueCertificate(
-        recipient.address,
-        sampleCertificate.recipientName,
-        sampleCertificate.courseName,
-        sampleCertificate.institutionName,
-        sampleCertificate.expiryDate,
-        sampleCertificate.verificationCode
-      );
+      await issueSampleCertificate();
 
       const [certData, currentOwner] = await certificate.getCertificateDetails(0);
-      
-      expect(certData.recipientName).to.equal(sampleCertificate.recipientName);
-      expect(certData.courseName).to.equal(sampleCertificate.courseName);
-      expect(certData.institutionName).to.equal(sampleCertificate.institutionName);
+
+      expect(ethers.decodeBytes32String(certData.recipientName)).to.equal(sampleCertificate.recipientName);
+      expect(ethers.decodeBytes32String(certData.courseName)).to.equal(sampleCertificate.courseName);
+      expect(ethers.decodeBytes32String(certData.institutionName)).to.equal(sampleCertificate.institutionName);
       expect(certData.recipientAddress).to.equal(recipient.address);
       expect(certData.issuerAddress).to.equal(owner.address);
       expect(certData.isRevoked).to.be.false;
-      expect(certData.verificationCode).to.equal(sampleCertificate.verificationCode);
+      expect(ethers.decodeBytes32String(certData.verificationCode)).to.equal(sampleCertificate.verificationCode);
       expect(currentOwner).to.equal(recipient.address);
     });
 
     it("Should store issued certificate IDs under the recipient", async function () {
-      await certificate.issueCertificate(
-        recipient.address,
-        sampleCertificate.recipientName,
-        sampleCertificate.courseName,
-        sampleCertificate.institutionName,
-        sampleCertificate.expiryDate,
-        sampleCertificate.verificationCode
-      );
+      await issueSampleCertificate();
 
       const certificateIds = await certificate.getCertificatesByRecipient(recipient.address);
       expect(certificateIds).to.deep.equal([0n]);
     });
 
     it("Should store issued certificate IDs under the issuer", async function () {
-      await certificate.issueCertificate(
-        recipient.address,
-        sampleCertificate.recipientName,
-        sampleCertificate.courseName,
-        sampleCertificate.institutionName,
-        sampleCertificate.expiryDate,
-        sampleCertificate.verificationCode
-      );
+      await issueSampleCertificate();
 
       const certificateIds = await certificate.getCertificatesByIssuer(owner.address);
       expect(certificateIds).to.deep.equal([0n]);
@@ -145,31 +134,24 @@ describe("Certificate Contract", function () {
       await certificate.addIssuer(issuer.address);
       await certificate.addIssuer(secondIssuer.address);
 
-      await certificate.issueCertificate(
-        recipient.address,
-        sampleCertificate.recipientName,
-        sampleCertificate.courseName,
-        sampleCertificate.institutionName,
-        sampleCertificate.expiryDate,
-        sampleCertificate.verificationCode
-      );
+      await issueSampleCertificate();
 
       await certificate.connect(issuer).issueCertificate(
         secondRecipient.address,
-        "Jane Doe",
-        "Smart Contract Security",
-        "Tech University",
+        toBytes32("Jane Doe"),
+        toBytes32("Smart Contract Security"),
+        toBytes32("Tech University"),
         0,
-        "WXYZ2345EFGH6789JKLM"
+        toBytes32("WXYZ2345EFGH6789JKLM")
       );
 
       await certificate.connect(secondIssuer).issueCertificate(
         recipient.address,
-        "John Doe",
-        "Frontend Development",
-        "Tech University",
+        toBytes32("John Doe"),
+        toBytes32("Frontend Development"),
+        toBytes32("Tech University"),
         0,
-        "QRST2345EFGH6789JKLM"
+        toBytes32("QRST2345EFGH6789JKLM")
       );
 
       expect(await certificate.getCertificatesByIssuer(owner.address)).to.deep.equal([0n]);
@@ -181,35 +163,57 @@ describe("Certificate Contract", function () {
       await expect(
         certificate.connect(otherUser).issueCertificate(
           recipient.address,
-          sampleCertificate.recipientName,
-          sampleCertificate.courseName,
-          sampleCertificate.institutionName,
+          toBytes32(sampleCertificate.recipientName),
+          toBytes32(sampleCertificate.courseName),
+          toBytes32(sampleCertificate.institutionName),
           sampleCertificate.expiryDate,
-          sampleCertificate.verificationCode
+          toBytes32(sampleCertificate.verificationCode)
         )
-      ).to.be.revert(ethers);
+      ).to.be.reverted;
     });
 
     it("Should reject duplicate verification codes", async function () {
-      await certificate.issueCertificate(
-        recipient.address,
-        sampleCertificate.recipientName,
-        sampleCertificate.courseName,
-        sampleCertificate.institutionName,
-        sampleCertificate.expiryDate,
-        sampleCertificate.verificationCode
-      );
+      await issueSampleCertificate();
 
       await expect(
         certificate.issueCertificate(
           secondRecipient.address,
-          "Jane Doe",
-          "Solidity Security",
-          "Tech University",
+          toBytes32("Jane Doe"),
+          toBytes32("Solidity Security"),
+          toBytes32("Tech University"),
           0,
-          sampleCertificate.verificationCode
+          toBytes32(sampleCertificate.verificationCode)
         )
       ).to.be.revertedWith("Verification code already exists");
+    });
+
+    it("Should reject empty bytes32 fields", async function () {
+      await expect(
+        certificate.issueCertificate(
+          recipient.address,
+          ethers.ZeroHash,
+          toBytes32(sampleCertificate.courseName),
+          toBytes32(sampleCertificate.institutionName),
+          0,
+          toBytes32(sampleCertificate.verificationCode)
+        )
+      ).to.be.revertedWith("Recipient name required");
+    });
+
+    it("Should reject past expiry dates", async function () {
+      const latestBlock = await ethers.provider.getBlock("latest");
+      const pastExpiry = BigInt((latestBlock?.timestamp ?? 0) - 1);
+
+      await expect(
+        certificate.issueCertificate(
+          recipient.address,
+          toBytes32(sampleCertificate.recipientName),
+          toBytes32(sampleCertificate.courseName),
+          toBytes32(sampleCertificate.institutionName),
+          pastExpiry,
+          toBytes32(sampleCertificate.verificationCode)
+        )
+      ).to.be.revertedWith("Expiry must be in future");
     });
   });
 
@@ -217,11 +221,11 @@ describe("Certificate Contract", function () {
     beforeEach(async function () {
       await certificate.issueCertificate(
         recipient.address,
-        sampleCertificate.recipientName,
-        sampleCertificate.courseName,
-        sampleCertificate.institutionName,
+        toBytes32(sampleCertificate.recipientName),
+        toBytes32(sampleCertificate.courseName),
+        toBytes32(sampleCertificate.institutionName),
         sampleCertificate.expiryDate,
-        sampleCertificate.verificationCode
+        toBytes32(sampleCertificate.verificationCode)
       );
     });
 
@@ -232,13 +236,13 @@ describe("Certificate Contract", function () {
     });
 
     it("Should resolve token by verification code", async function () {
-      const [exists, tokenId] = await certificate.getTokenIdByVerificationCode(sampleCertificate.verificationCode);
+      const [exists, tokenId] = await certificate.getTokenIdByVerificationCode(toBytes32(sampleCertificate.verificationCode));
       expect(exists).to.be.true;
       expect(tokenId).to.equal(0);
     });
 
     it("Should verify valid certificate by code", async function () {
-      const [isValid, message, tokenId] = await certificate.verifyCertificateByCode(sampleCertificate.verificationCode);
+      const [isValid, message, tokenId] = await certificate.verifyCertificateByCode(toBytes32(sampleCertificate.verificationCode));
       expect(isValid).to.be.true;
       expect(message).to.equal("Certificate is valid");
       expect(tokenId).to.equal(0);
@@ -251,8 +255,9 @@ describe("Certificate Contract", function () {
     });
 
     it("Should return false for non-existent verification code", async function () {
-      const [exists, tokenId] = await certificate.getTokenIdByVerificationCode("UNKNOWNCODE1234567890");
-      const [isValid, message, verifyTokenId] = await certificate.verifyCertificateByCode("UNKNOWNCODE1234567890");
+      const unknownCode = toBytes32("UNKNOWNCODE1234567890");
+      const [exists, tokenId] = await certificate.getTokenIdByVerificationCode(unknownCode);
+      const [isValid, message, verifyTokenId] = await certificate.verifyCertificateByCode(unknownCode);
 
       expect(exists).to.be.false;
       expect(tokenId).to.equal(0);
@@ -270,27 +275,29 @@ describe("Certificate Contract", function () {
 
     it("Should return false for revoked certificate by code", async function () {
       await certificate.revokeCertificate(0);
-      const [isValid, message, tokenId] = await certificate.verifyCertificateByCode(sampleCertificate.verificationCode);
+      const [isValid, message, tokenId] = await certificate.verifyCertificateByCode(toBytes32(sampleCertificate.verificationCode));
       expect(isValid).to.be.false;
       expect(message).to.equal("Certificate has been revoked");
       expect(tokenId).to.equal(0);
     });
 
     it("Should return false for expired certificate by code", async function () {
-      const futureExpiry = 1_900_000_000;
+      const latestBlock = await ethers.provider.getBlock("latest");
+      const futureExpiry = BigInt((latestBlock?.timestamp ?? 0) + 60);
+
       await certificate.issueCertificate(
         secondRecipient.address,
-        "Jane Doe",
-        "Auditing",
-        "Tech University",
+        toBytes32("Jane Doe"),
+        toBytes32("Auditing"),
+        toBytes32("Tech University"),
         futureExpiry,
-        "EXPY2345EFGH6789JKLM"
+        toBytes32("EXPY2345EFGH6789JKLM")
       );
 
-      await ethers.provider.send("evm_setNextBlockTimestamp", [futureExpiry + 1]);
+      await ethers.provider.send("evm_setNextBlockTimestamp", [Number(futureExpiry) + 1]);
       await ethers.provider.send("evm_mine", []);
 
-      const [isValid, message, tokenId] = await certificate.verifyCertificateByCode("EXPY2345EFGH6789JKLM");
+      const [isValid, message, tokenId] = await certificate.verifyCertificateByCode(toBytes32("EXPY2345EFGH6789JKLM"));
       expect(isValid).to.be.false;
       expect(message).to.equal("Certificate has expired");
       expect(tokenId).to.equal(1);
@@ -301,11 +308,11 @@ describe("Certificate Contract", function () {
     beforeEach(async function () {
       await certificate.issueCertificate(
         recipient.address,
-        sampleCertificate.recipientName,
-        sampleCertificate.courseName,
-        sampleCertificate.institutionName,
+        toBytes32(sampleCertificate.recipientName),
+        toBytes32(sampleCertificate.courseName),
+        toBytes32(sampleCertificate.institutionName),
         sampleCertificate.expiryDate,
-        sampleCertificate.verificationCode
+        toBytes32(sampleCertificate.verificationCode)
       );
     });
 

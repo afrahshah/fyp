@@ -26,6 +26,10 @@ function normalizeKnownMessage(message) {
     return 'Expiry must be in future';
   }
 
+  if (message.includes('verification code already exists')) {
+    return 'Verification code already exists';
+  }
+
   if (message.includes('certificate already exists')) {
     return 'Certificate already exists';
   }

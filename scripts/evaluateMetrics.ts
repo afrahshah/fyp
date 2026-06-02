@@ -3,8 +3,9 @@ import { performance } from "perf_hooks";
 
 async function main() {
     const { ethers } = await network.connect();
+    const toBytes32 = (value: string) => ethers.encodeBytes32String(value);
 
-    // Use your newly deployed 6-parameter contract address
+    // Use your newly deployed bytes32-based contract address
     const contractAddress = "0x05cE48785649226C726c1aece7531E145C8b06e4";
 
     const contract = await ethers.getContractAt("Certificate", contractAddress);
@@ -17,12 +18,11 @@ async function main() {
     console.log(`Starting Authentic Metrics Evaluation on Contract: ${contractAddress}\n`);
 
     // Your exact on-chain parameters
-    const studentName = "Hadiya Mushtaq";
-    const courseName = "B.Tech Computer Science";
-    const institutionName = "NIT Srinagar";
+    const studentName = toBytes32("Hadiya Mushtaq");
+    const courseName = toBytes32("B.Tech Computer Science");
+    const institutionName = toBytes32("NIT Srinagar");
     const expiry = 0; // No expiry
-    const shareCode = "ABCD2345EFGH6789JKLM"; 
-    // IPFS variables completely removed!
+    const shareCodePrefix = "ABCD2345EFGH6789";
 
     // =========================================================
     // PHASE 1: LATENCY & COST (The "Rule of 30" Sequential Test)
@@ -41,11 +41,9 @@ async function main() {
         
         const startTime = performance.now();
 
-        // Make the verification code unique for every iteration so it doesn't revert
-        const uniqueCode = `${shareCode}-P1-${i}-${Date.now()}`;
+        const uniqueCode = toBytes32(`${shareCodePrefix}${i.toString().padStart(2, "0")}`);
 
         try {
-            // Updated function call with exactly 6 parameters
             const tx = await contract.issueCertificate(
                 recipientAddress,
                 studentName,
@@ -100,8 +98,9 @@ async function main() {
         const batchStartTime = performance.now();
 
         for (let i = 0; i < batchSize; i++) {
-            // Make the verification code unique for the batch
-            const uniqueBatchCode = `${shareCode}-P2-${batchSize}-${i}-${Date.now()}`;
+            const uniqueBatchCode = toBytes32(
+                `${shareCodePrefix}${batchSize.toString().padStart(2, "0")}${i.toString().padStart(2, "0")}`
+            );
 
             const txPromise = contract.issueCertificate(
                 recipientAddress,

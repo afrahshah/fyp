@@ -5,6 +5,10 @@ import CertificateCard from '../components/CertificateCard';
 import toast from 'react-hot-toast';
 import { getReadOnlyContract } from '../utils/readOnlyContract';
 import {
+  decodeBytes32Text,
+  encodeVerificationCode
+} from '../utils/certificateEncoding';
+import {
   formatVerificationCode,
   normalizeVerificationCode
 } from '../utils/verification';
@@ -58,7 +62,8 @@ export default function Verify() {
 
     try {
       const contract = await getReadOnlyContract();
-      const [contractIsValid, contractMessage, resolvedTokenId] = await contract.verifyCertificateByCode(canonicalCode);
+      const verificationCodeBytes = encodeVerificationCode(canonicalCode);
+      const [contractIsValid, contractMessage, resolvedTokenId] = await contract.verifyCertificateByCode(verificationCodeBytes);
 
       if (!contractIsValid && contractMessage === 'Certificate does not exist') {
         setResult({ isValid: false, message: contractMessage });
@@ -82,17 +87,16 @@ export default function Verify() {
 
       const certificate = {
         tokenId: Number(resolvedTokenId),
-        recipientName: certData.recipientName,
-        courseName: certData.courseName,
-        institutionName: certData.institutionName,
+        recipientName: decodeBytes32Text(certData.recipientName),
+        courseName: decodeBytes32Text(certData.courseName),
+        institutionName: decodeBytes32Text(certData.institutionName),
         issueDate: certData.issueDate,
         expiryDate: certData.expiryDate,
         recipientAddress: certData.recipientAddress,
         issuerAddress: certData.issuerAddress,
-        ipfsHash: certData.ipfsHash,
-        verificationCode: certData.verificationCode || canonicalCode,
-        currentOwner,
-        isRevoked: certData.isRevoked
+        isRevoked: certData.isRevoked,
+        verificationCode: decodeBytes32Text(certData.verificationCode) || canonicalCode,
+        currentOwner
       };
 
       const status = getCertificateStatus(certificate, finalIsValid);
@@ -140,56 +144,6 @@ export default function Verify() {
   };
 
   const renderVerifiedCard = (certificate) => {
-    if (certificate.ipfsHash && certificate.ipfsHash.trim() !== '') {
-      const statusClass = certificate.isRevoked ? 'revoked' : certificate.isValid ? 'valid' : 'expired';
-      const statusText = certificate.isRevoked ? 'Revoked' : certificate.isValid ? 'Valid' : 'Expired';
-      const ipfsPath = certificate.ipfsHash.replace('ipfs://', '');
-
-      return (
-        <div
-          className={`certificate-card ${statusClass}`}
-          onClick={() => handleCardClick(certificate)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault();
-              handleCardClick(certificate);
-            }
-          }}
-        >
-          <div className="card-header">
-            <span className="card-id">#{certificate.tokenId?.toString()}</span>
-            <span className={`status-badge ${statusClass}`}>
-              {statusText}
-            </span>
-          </div>
-          <div className="card-body verify-preview-body">
-            <div className="verify-preview-frame">
-              <iframe
-                src={`https://gateway.pinata.cloud/ipfs/${ipfsPath}`}
-                width="100%"
-                height="100%"
-                title={`Certificate ${certificate.tokenId}`}
-                className="verify-preview-frame-embed"
-              />
-            </div>
-          </div>
-          <div className="card-footer verify-preview-footer">
-            <a
-              href={`https://gateway.pinata.cloud/ipfs/${ipfsPath}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="verify-preview-link"
-              onClick={(event) => event.stopPropagation()}
-            >
-              Open full size
-            </a>
-          </div>
-        </div>
-      );
-    }
-
     return (
       <CertificateCard
         certificate={certificate}

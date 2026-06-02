@@ -1,8 +1,14 @@
 import { useState } from 'react';
+import { ethers } from 'ethers';
 import { useWeb3 } from '../hooks/useWeb3';
 import toast from 'react-hot-toast';
 import CertificateSharePanel from '../components/CertificateSharePanel';
 import { generateVerificationCode } from '../utils/verification';
+import {
+  encodeBytes32Text,
+  encodeVerificationCode,
+  MAX_BYTES32_TEXT_LENGTH
+} from '../utils/certificateEncoding';
 import { getWeb3ErrorMessage } from '../utils/web3Errors';
 import './Issue.css';
 
@@ -120,13 +126,18 @@ export default function Issue() {
         return;
       }
 
+      const recipientNameBytes = encodeBytes32Text(formData.recipientName, 'Recipient name');
+      const courseNameBytes = encodeBytes32Text(formData.courseName, 'Course name');
+      const institutionNameBytes = encodeBytes32Text(formData.institutionName, 'Institution name');
+      const verificationCodeBytes = encodeVerificationCode(verificationCode);
+
       const tx = await contract.issueCertificate(
         formData.recipientAddress,
-        formData.recipientName,
-        formData.courseName,
-        formData.institutionName,
-        expiryTimestamp,
-        verificationCode
+        recipientNameBytes,
+        courseNameBytes,
+        institutionNameBytes,
+        ethers.toBigInt(expiryTimestamp),
+        verificationCodeBytes
       );
 
       toast.loading('Transaction submitted...', { id: 'issue' });
@@ -212,7 +223,7 @@ export default function Issue() {
             </div>
             <div className="form-group">
               <label htmlFor="recipientName">Recipient Full Name *</label>
-              <input type="text" id="recipientName" name="recipientName" value={formData.recipientName} onChange={handleChange} placeholder="John Doe" required />
+              <input type="text" id="recipientName" name="recipientName" value={formData.recipientName} onChange={handleChange} placeholder="John Doe" maxLength={MAX_BYTES32_TEXT_LENGTH} required />
             </div>
           </div>
 
@@ -220,11 +231,11 @@ export default function Issue() {
             <h3>Certificate Details</h3>
             <div className="form-group">
               <label htmlFor="courseName">Course / Achievement *</label>
-              <input type="text" id="courseName" name="courseName" value={formData.courseName} onChange={handleChange} placeholder="Blockchain Development" required />
+              <input type="text" id="courseName" name="courseName" value={formData.courseName} onChange={handleChange} placeholder="Blockchain Development" maxLength={MAX_BYTES32_TEXT_LENGTH} required />
             </div>
             <div className="form-group">
               <label htmlFor="institutionName">Institution *</label>
-              <input type="text" id="institutionName" name="institutionName" value={formData.institutionName} onChange={handleChange} placeholder="Tech University" required />
+              <input type="text" id="institutionName" name="institutionName" value={formData.institutionName} onChange={handleChange} placeholder="Tech University" maxLength={MAX_BYTES32_TEXT_LENGTH} required />
             </div>
             <div className="form-group">
               <label htmlFor="expiryDate">Expiry (Optional)</label>

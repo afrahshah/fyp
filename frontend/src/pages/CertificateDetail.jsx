@@ -4,6 +4,7 @@ import { useWeb3 } from '../hooks/useWeb3';
 import { getReadOnlyContract } from '../utils/readOnlyContract';
 import CertificateSharePanel from '../components/CertificateSharePanel';
 import toast from 'react-hot-toast';
+import { decodeBytes32Text } from '../utils/certificateEncoding';
 import { getWeb3ErrorMessage } from '../utils/web3Errors';
 import './CertificateDetail.css';
 
@@ -43,16 +44,15 @@ export default function CertificateDetail() {
 
       setCertificate({
         tokenId: id,
-        recipientName: certData.recipientName,
-        courseName: certData.courseName,
-        institutionName: certData.institutionName,
+        recipientName: decodeBytes32Text(certData.recipientName),
+        courseName: decodeBytes32Text(certData.courseName),
+        institutionName: decodeBytes32Text(certData.institutionName),
         issueDate: certData.issueDate,
         expiryDate: certData.expiryDate,
         recipientAddress: certData.recipientAddress,
         issuerAddress: certData.issuerAddress,
         isRevoked: certData.isRevoked,
-        ipfsHash: certData.ipfsHash,
-        verificationCode: certData.verificationCode,
+        verificationCode: decodeBytes32Text(certData.verificationCode),
         currentOwner: currentOwner,
         isValid: finalIsValid,
         statusMessage: finalMessage
@@ -277,16 +277,6 @@ export default function CertificateDetail() {
                 <span className="value">{formatDate(certificate.expiryDate)}</span>
               </div>
             </div>
-
-            {certificate.ipfsHash && (
-              <div className="detail-group">
-                <h3>Additional Data</h3>
-                <div className="detail-item">
-                  <span className="label">IPFS Hash</span>
-                  <span className="value ipfs">{certificate.ipfsHash}</span>
-                </div>
-              </div>
-            )}
 
             {certificate.verificationCode && (
               <CertificateSharePanel

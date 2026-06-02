@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useWeb3 } from '../hooks/useWeb3';
 import CertificateCard from '../components/CertificateCard';
 import toast from 'react-hot-toast';
+import { decodeBytes32Text } from '../utils/certificateEncoding';
 import './Gallery.css';
 
 export default function Gallery() {
@@ -53,15 +54,15 @@ export default function Gallery() {
           
           certs.push({
             tokenId,
-            recipientName: certData.recipientName,
-            courseName: certData.courseName,
-            institutionName: certData.institutionName,
+            recipientName: decodeBytes32Text(certData.recipientName),
+            courseName: decodeBytes32Text(certData.courseName),
+            institutionName: decodeBytes32Text(certData.institutionName),
             issueDate: certData.issueDate,
             expiryDate: certData.expiryDate,
             recipientAddress: certData.recipientAddress,
             issuerAddress: certData.issuerAddress,
             isRevoked: certData.isRevoked,
-            ipfsHash: certData.ipfsHash,
+            verificationCode: decodeBytes32Text(certData.verificationCode),
             currentOwner: currentOwner,
             isValid: finalIsValid,
             isExpired: isExpiredLocally
@@ -227,62 +228,12 @@ export default function Gallery() {
         ) : (
          <div className="certificates-grid">
             {filteredCertificates.map((cert) => {
-              const isRevoked = cert.isRevoked;
-              const isExpired = cert.isValid === false;
-              const statusClass = isRevoked ? 'revoked' : (isExpired ? 'expired' : 'valid');
-              const statusText = isRevoked ? 'Revoked' : (isExpired ? 'Expired' : 'Valid');
               return (
-                <div key={cert.tokenId} className="gallery-item-wrapper">       
-                  {/* CONDITION 1: Has IPFS Hash -> Show the Visual Card */}
-                  {cert.ipfsHash && cert.ipfsHash.trim() !== "" ? (                   
-                    <div 
-                      className={`certificate-card ${statusClass}`} 
-                      onClick={() => handleCardClick(cert)}
-                    >                     
-                      <div className="card-header">
-                        <span className="card-id">#{cert.tokenId?.toString()}</span>
-                        <span className={`status-badge ${statusClass}`}>
-                          {statusText}
-                        </span>
-                      </div>
-                      <div className="card-body" style={{ padding: '0 0 1rem 0', height: '300px' }}>
-                        <div style={{ width: '100%', height: '100%', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#fff' }}>
-                          <iframe 
-                            src={`https://gateway.pinata.cloud/ipfs/${cert.ipfsHash.replace('ipfs://', '')}`}
-                            width="100%" 
-                            height="100%" 
-                            title={`Certificate ${cert.tokenId}`}
-                            style={{ border: 'none', pointerEvents: 'none' }} 
-                          />
-                        </div>
-                      </div>
-                      <div className="card-footer" style={{ display: 'flex', justifyContent: 'center' }}>
-                        <a 
-                          href={`https://gateway.pinata.cloud/ipfs/${cert.ipfsHash.replace('ipfs://', '')}`}
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          style={{ 
-                            color: '#4ade80', 
-                            fontSize: '0.875rem',
-                            fontWeight: '600',
-                            textDecoration: 'none',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.5px'
-                          }}
-                          onClick={(e) => e.stopPropagation()} 
-                        >
-                          ⛶ Open Full Size
-                        </a>
-                      </div>
-                    </div>
-                  ) : (                   
-                    /* CONDITION 2: No IPFS Hash -> Show the standard React Card */
-                    <CertificateCard
-                      certificate={cert} 
-                      onClick={() => handleCardClick(cert)}
-                    />
-
-                  )}
+                <div key={cert.tokenId} className="gallery-item-wrapper">
+                  <CertificateCard
+                    certificate={cert}
+                    onClick={() => handleCardClick(cert)}
+                  />
                 </div>
               );
             })}
