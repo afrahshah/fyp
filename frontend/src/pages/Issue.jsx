@@ -151,10 +151,22 @@ export default function Issue() {
           }
         })
         .find((parsedLog) => parsedLog?.name === 'CertificateIssued');
+      let tokenId = issuedEvent ? Number(issuedEvent.args.tokenId) : null;
+
+      if (tokenId === null) {
+        try {
+          const totalCertificates = await contract.getTotalCertificates();
+          if (totalCertificates > 0n) {
+            tokenId = Number(totalCertificates - 1n);
+          }
+        } catch (fallbackError) {
+          console.warn('Unable to resolve token ID from total supply fallback:', fallbackError);
+        }
+      }
 
       toast.success('Certificate issued successfully!', { id: 'issue' });
       setIssuedCertificate({
-        tokenId: issuedEvent ? Number(issuedEvent.args.tokenId) : null,
+        tokenId,
         verificationCode
       });
 

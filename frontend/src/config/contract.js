@@ -32,5 +32,5 @@ export const READ_ONLY_RPC_URLS = Array.from(
 
 export const READ_ONLY_RPC_URL = READ_ONLY_RPC_URLS[0];
 
-export const CONTRACT_ADDRESS = "0x05cE48785649226C726c1aece7531E145C8b06e4"; 
+export const CONTRACT_ADDRESS = "0xf66D0eD7aC3e5E4efb69ac2a3b786ABAB6568C27"; 
 export const CONTRACT_ABI = CertificateABI.abi;
