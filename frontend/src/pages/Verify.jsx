@@ -91,7 +91,8 @@ export default function Verify() {
         issuerAddress: certData.issuerAddress,
         ipfsHash: certData.ipfsHash,
         verificationCode: certData.verificationCode || canonicalCode,
-        currentOwner
+        currentOwner,
+        isRevoked: certData.isRevoked
       };
 
       const status = getCertificateStatus(certificate, finalIsValid);
