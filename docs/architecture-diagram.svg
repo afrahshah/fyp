@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1000" viewBox="0 0 1800 1000">
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#111"/>
+    </marker>
+    <style>
+      .title { font: 700 34px Arial, Helvetica, sans-serif; fill: #111; }
+      .box-title { font: 700 25px Arial, Helvetica, sans-serif; fill: #111; }
+      .body { font: 18px Arial, Helvetica, sans-serif; fill: #111; }
+      .small { font: 15px Arial, Helvetica, sans-serif; fill: #111; }
+      .label { font: 16px Arial, Helvetica, sans-serif; fill: #111; }
+      .box { fill: #fff; stroke: #111; stroke-width: 2.5; }
+      .soft { fill: #f5f5f5; stroke: #111; stroke-width: 2.5; }
+      .strong { fill: #f3f3f3; stroke: #111; stroke-width: 4; }
+      .dash { fill: #fff; stroke: #111; stroke-width: 2.5; stroke-dasharray: 8 7; }
+      .line { stroke: #111; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .dash-line { stroke: #111; stroke-width: 2.5; fill: none; stroke-dasharray: 7 6; marker-end: url(#arrow); }
+      .plain-line { stroke: #111; stroke-width: 2.2; fill: none; }
+      .node { fill: #111; stroke: #111; }
+    </style>
+  </defs>
+
+  <rect width="1800" height="1000" fill="#fff"/>
+  <text class="title" x="80" y="62">AfHadChain Architecture</text>
+
+  <!-- Actors -->
+  <g id="administration-entity">
+    <rect class="box" x="85" y="110" width="305" height="105"/>
+    <rect class="soft" x="112" y="134" width="62" height="62"/>
+    <path class="plain-line" d="M126 182 V154 H160 V182"/>
+    <path class="plain-line" d="M131 182 V162 H140 V182 M146 182 V162 H155 V182"/>
+    <path class="plain-line" d="M124 154 H162 L143 142 Z"/>
+    <text class="box-title" x="196" y="156">Administration</text>
+    <text class="box-title" x="196" y="186">Entity</text>
+  </g>
+
+  <g id="issuers">
+    <rect class="box" x="85" y="275" width="305" height="105"/>
+    <rect class="soft" x="112" y="299" width="62" height="62"/>
+    <path class="plain-line" d="M119 354 H167 M123 346 V320 H163 V346"/>
+    <path class="plain-line" d="M128 346 V328 M139 346 V328 M150 346 V328 M161 346 V328"/>
+    <path class="plain-line" d="M119 320 H168 L143.5 309 Z"/>
+    <text class="box-title" x="196" y="339">Issuers</text>
+  </g>
+
+  <g id="recipients">
+    <rect class="box" x="85" y="440" width="305" height="105"/>
+    <rect class="soft" x="112" y="464" width="62" height="62"/>
+    <circle class="plain-line" cx="135" cy="484" r="9"/>
+    <circle class="plain-line" cx="154" cy="484" r="9"/>
+    <path class="plain-line" d="M120 520 C125 501 147 501 151 520"/>
+    <path class="plain-line" d="M139 520 C144 501 166 501 170 520"/>
+    <path class="plain-line" d="M122 468 L135 460 L148 468 M141 468 L154 460 L167 468"/>
+    <text class="box-title" x="196" y="504">Recipients</text>
+  </g>
+
+  <g id="verifiers">
+    <rect class="box" x="85" y="605" width="305" height="105"/>
+    <rect class="soft" x="112" y="629" width="62" height="62"/>
+    <rect class="plain-line" x="125" y="643" width="36" height="28"/>
+    <path class="plain-line" d="M131 678 H155 M134 684 H152"/>
+    <path class="plain-line" d="M119 688 C127 678 159 678 167 688"/>
+    <text class="box-title" x="196" y="669">Verifiers</text>
+  </g>
+
+  <!-- DApp -->
+  <text class="body" x="670" y="348">React + Vite</text>
+  <g id="dapp">
+    <rect class="strong" x="590" y="375" width="285" height="110" rx="12"/>
+    <text class="box-title" x="642" y="438">AfHadChain DApp</text>
+  </g>
+
+  <!-- Actor arrows -->
+  <path class="line" d="M390 162 C470 162 477 365 590 407"/>
+  <text class="label" x="420" y="130">Deploys / initializes</text>
+  <text class="label" x="420" y="153">Adds / removes issuers</text>
+  <text class="label" x="420" y="176">Checks roles</text>
+
+  <path class="line" d="M390 328 C472 328 494 404 590 420"/>
+  <text class="label" x="420" y="300">Issue certificates</text>
+  <text class="label" x="420" y="323">Revoke certificates</text>
+
+  <path class="line" d="M390 493 C472 493 495 456 590 444"/>
+  <text class="label" x="420" y="516">Access certificates</text>
+  <text class="label" x="420" y="539">Share verification code</text>
+
+  <path class="line" d="M390 658 C476 658 493 486 590 464"/>
+  <text class="label" x="420" y="683">Verify certificates</text>
+
+  <!-- Access tools connector -->
+  <path class="line" d="M875 430 H950"/>
+  <rect class="box" x="950" y="405" width="50" height="50" rx="5"/>
+  <text class="label" x="900" y="395">Access tools</text>
+  <text class="small" x="928" y="382">MetaMask / ethers.js</text>
+  <text class="small" x="910" y="490">Read-only RPC / ethers.js</text>
+
+  <!-- Blockchain network -->
+  <g id="blockchain-network">
+    <circle class="box" cx="1225" cy="420" r="58"/>
+    <line class="plain-line" x1="1178" y1="420" x2="1272" y2="420"/>
+    <line class="plain-line" x1="1193" y1="385" x2="1257" y2="455"/>
+    <line class="plain-line" x1="1257" y1="385" x2="1193" y2="455"/>
+    <line class="plain-line" x1="1193" y1="385" x2="1272" y2="420"/>
+    <line class="plain-line" x1="1178" y1="420" x2="1257" y2="455"/>
+    <line class="plain-line" x1="1193" y1="455" x2="1257" y2="385"/>
+    <circle class="node" cx="1178" cy="420" r="6"/>
+    <circle class="node" cx="1272" cy="420" r="6"/>
+    <circle class="node" cx="1193" cy="385" r="6"/>
+    <circle class="node" cx="1257" cy="385" r="6"/>
+    <circle class="node" cx="1193" cy="455" r="6"/>
+    <circle class="node" cx="1257" cy="455" r="6"/>
+    <text class="box-title" x="1122" y="538">Blockchain Network</text>
+    <text class="body" x="1184" y="566">(Sepolia)</text>
+  </g>
+
+  <!-- DApp access paths -->
+  <path class="line" d="M1000 425 C1056 350 1110 350 1166 390"/>
+  <text class="label" x="1028" y="308">Signed transactions</text>
+  <text class="small" x="1028" y="332">issueCertificate / revokeCertificate</text>
+  <text class="small" x="1028" y="354">addIssuer / removeIssuer</text>
+
+  <path class="dash-line" d="M1000 450 C1054 525 1112 526 1168 456"/>
+  <text class="label" x="1028" y="562">Verification queries</text>
+  <text class="small" x="1028" y="586">verifyCertificateByCode</text>
+  <text class="small" x="1028" y="608">getCertificateDetails</text>
+
+  <!-- Smart contract and ledger boundary -->
+  <g id="smart-contract-ledger">
+    <rect class="dash" x="1400" y="125" width="315" height="760" rx="48"/>
+
+    <g id="contract-icon">
+      <rect class="box" x="1435" y="235" width="92" height="120"/>
+      <path class="plain-line" d="M1453 267 H1507 M1453 297 H1507 M1453 327 H1484"/>
+      <path d="M1511 308 L1535 330 L1511 352 L1487 330 Z" fill="#111"/>
+    </g>
+
+    <text class="box-title" x="1415" y="410">Certificate</text>
+    <text class="box-title" x="1415" y="440">Smart Contract</text>
+    <text class="small" x="1415" y="468">ERC-721 CERT</text>
+    <text class="small" x="1415" y="490">AccessControl</text>
+
+    <g id="ledger-stack">
+      <rect class="box" x="1600" y="185" width="70" height="55"/>
+      <rect class="box" x="1600" y="268" width="70" height="55"/>
+      <rect class="box" x="1600" y="351" width="70" height="55"/>
+      <rect class="box" x="1600" y="434" width="70" height="55"/>
+      <rect class="box" x="1600" y="517" width="70" height="55"/>
+      <path class="plain-line" d="M1635 268 V242 M1635 351 V325 M1635 434 V408 M1635 517 V491"/>
+      <path d="M1628 251 L1635 242 L1642 251 Z" fill="#111"/>
+      <path d="M1628 334 L1635 325 L1642 334 Z" fill="#111"/>
+      <path d="M1628 417 L1635 408 L1642 417 Z" fill="#111"/>
+      <path d="M1628 500 L1635 491 L1642 500 Z" fill="#111"/>
+    </g>
+
+    <text class="box-title" x="1534" y="635">On-chain</text>
+    <text class="box-title" x="1534" y="665">Ledger</text>
+    <text class="small" x="1512" y="695">certificate data</text>
+    <text class="small" x="1512" y="717">verification codes</text>
+    <text class="small" x="1512" y="739">revocation status</text>
+  </g>
+
+  <path class="line" d="M1284 420 C1320 410 1360 350 1435 306"/>
+  <text class="label" x="1306" y="360">Contract calls</text>
+
+  <path class="line" d="M1535 330 C1560 300 1573 270 1600 240"/>
+  <text class="label" x="1514" y="218">Mint / update</text>
+
+  <path class="dash-line" d="M1272 486 C1320 700 1428 780 1530 650"/>
+  <text class="label" x="1310" y="704">Read certificate state</text>
+</svg>

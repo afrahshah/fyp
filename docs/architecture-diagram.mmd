@@ -1,0 +1,47 @@
+flowchart LR
+  %% AfHadChain architecture diagram.
+  %% Certificate data is stored fully on-chain by the Certificate smart contract.
+
+  admin["Administration Entity"]
+  issuer["Issuers"]
+  recipient["Recipients"]
+  verifier["Verifiers"]
+
+  stackLabel["React + Vite"]
+  dapp["AfHadChain DApp"]
+  access["Access tools<br/>MetaMask + ethers.js<br/>Read-only RPC"]
+
+  blockchain["Blockchain Network<br/>(Sepolia)"]
+  contract["Certificate Smart Contract<br/>ERC-721 CERT<br/>AccessControl"]
+  ledger["On-chain Ledger<br/>certificate data<br/>verification codes<br/>revocation status"]
+
+  admin -->|"Deploys / initializes<br/>Adds / removes issuers<br/>Checks roles"| dapp
+  issuer -->|"Issue certificates<br/>Revoke certificates"| dapp
+  recipient -->|"Access certificates<br/>Share verification code"| dapp
+  verifier -->|"Verify certificates"| dapp
+
+  stackLabel -.-> dapp
+  dapp -->|"Access tools"| access
+  access -->|"Signed transactions<br/>issueCertificate / revokeCertificate<br/>addIssuer / removeIssuer"| blockchain
+  access -.->|"Verification queries<br/>verifyCertificateByCode<br/>getCertificateDetails"| blockchain
+
+  blockchain -->|"Contract calls"| contract
+  contract -->|"Mint / verify / revoke / lookup"| ledger
+  ledger -->|"Stored certificate state"| contract
+
+  subgraph onchain["Smart Contract + Ledger"]
+    contract
+    ledger
+  end
+
+  classDef actor fill:#ffffff,stroke:#111111,stroke-width:2px,color:#111111;
+  classDef app fill:#f5f5f5,stroke:#111111,stroke-width:3px,color:#111111;
+  classDef bridge fill:#ffffff,stroke:#333333,stroke-width:2px,color:#111111;
+  classDef chain fill:#eeeeee,stroke:#111111,stroke-width:2px,color:#111111;
+  classDef onchain fill:#ffffff,stroke:#111111,stroke-width:2px,stroke-dasharray: 6 4,color:#111111;
+
+  class admin,issuer,recipient,verifier actor;
+  class dapp app;
+  class access bridge;
+  class blockchain chain;
+  class contract,ledger,onchain onchain;

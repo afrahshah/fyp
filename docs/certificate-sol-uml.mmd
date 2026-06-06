@@ -1,0 +1,151 @@
+classDiagram
+  direction TB
+
+  %% AfHadChain Certificate.sol UML source.
+  %% Mirrors docs/certificate-sol-uml.png and contracts/Certificate.sol.
+
+  class ERC721 {
+    <<OpenZeppelin contract>>
+    +ownerOf(tokenId) address
+    +balanceOf(owner) uint256
+    -_ownerOf(tokenId) address
+    -_safeMint(to, tokenId)
+    +supportsInterface(interfaceId)
+  }
+
+  class AccessControl {
+    <<OpenZeppelin contract>>
+    +DEFAULT_ADMIN_ROLE bytes32
+    +hasRole(role, account) bool
+    +onlyRole(role) modifier
+    -_grantRole(role, account)
+    -_revokeRole(role, account)
+  }
+
+  class ERC721Enumerable {
+    <<OpenZeppelin extension>>
+    +totalSupply() uint256
+    +tokenOfOwnerByIndex(owner, index)
+    +tokenByIndex(index) uint256
+    #_increaseBalance(account, value)
+    #_update(to, tokenId, auth)
+  }
+
+  class Certificate {
+    <<contract>>
+    +ISSUER_ROLE bytes32 = keccak256("ISSUER_ROLE")
+    +ADMIN_ROLE bytes32 = keccak256("ADMIN_ROLE")
+    -_tokenIdCounter uint256
+    +certificates mapping(uint256 => CertificateData)
+    +recipientCertificates mapping(address => uint256[])
+    +issuerCertificates mapping(address => uint256[])
+    -verificationCodeToTokenIdPlusOne mapping(bytes32 => uint256)
+    +Events
+    +event CertificateIssued(tokenId, recipient, issuer, issueDate)
+    +event CertificateRevoked(tokenId, revokedBy, revokeDate)
+    +event IssuerAdded(issuer, addedBy)
+    +event IssuerRemoved(issuer, removedBy)
+    +Functions
+    +constructor() ERC721("Digital Certificate", "CERT")
+    +grant deployer DEFAULT_ADMIN_ROLE, ADMIN_ROLE, ISSUER_ROLE
+    +addIssuer(issuer) onlyRole(ADMIN_ROLE)
+    +removeIssuer(issuer) onlyRole(ADMIN_ROLE)
+    +issueCertificate(recipient, recipientName, courseName, institutionName, expiryDate, verificationCode) uint256
+    +revokeCertificate(tokenId)
+    +verifyCertificate(tokenId) (bool isValid, string message)
+    #_verifyCertificate(tokenId) (bool isValid, string message)
+    +getTokenIdByVerificationCode(verificationCode) (bool exists, uint256 tokenId)
+    +verifyCertificateByCode(verificationCode) (bool isValid, string message, uint256 tokenId)
+    +getCertificateDetails(tokenId) (CertificateData certData, address currentOwner)
+    +getCertificatesByRecipient(recipient) uint256[]
+    +getCertificatesByIssuer(issuer) uint256[]
+    +getTotalCertificates() uint256
+    +isIssuer(account) bool
+    +isAdmin(account) bool
+    #_update(to, tokenId, auth) address
+    #_increaseBalance(account, value)
+    +supportsInterface(interfaceId) bool
+  }
+
+  class CertificateData {
+    <<struct>>
+    +recipientAddress address
+    +issuerAddress address
+    +issueDate uint64
+    +expiryDate uint64
+    +isRevoked bool
+    +recipientName bytes32
+    +courseName bytes32
+    +institutionName bytes32
+    +verificationCode bytes32
+  }
+
+  class TokenLookupState {
+    <<storage indexes>>
+    +tokenId = _tokenIdCounter before increment
+    +certificates[tokenId] => CertificateData
+    +recipientCertificates[recipient] => uint256[]
+    +issuerCertificates[msg.sender] => uint256[]
+    +verificationCodeToTokenIdPlusOne[code] => tokenId + 1
+    +ownerOf(tokenId) => ERC721 currentOwner
+  }
+
+  class RBACP {
+    <<operational domain>>
+    +Role-Based Access Control and Permissions
+    +AccessControl manages DEFAULT_ADMIN_ROLE, ADMIN_ROLE, and ISSUER_ROLE
+    +Deployer receives all three roles during constructor execution
+    +ADMIN_ROLE controls addIssuer() and removeIssuer()
+    +ISSUER_ROLE gates issueCertificate() through onlyRole()
+    +Dynamic whitelisting and blacklisting avoids hard forks or consortium voting
+  }
+
+  class OnChainStorage {
+    <<operational domain>>
+    +Data Structure and Pure On-Chain Storage
+    +AfHadChain consolidates business logic in one Certificate.sol contract
+    +Consolidation reduces deployment gas and cross-contract call latency
+    +No IPFS or CID dependency is required for certificate metadata
+    +CertificateData is stored directly in EVM state
+    +Implementation stores names and verification code as bytes32
+    +Implementation stores issueDate and expiryDate as uint64 timestamps
+    +certificates[tokenId] gives O(1) certificate retrieval
+  }
+
+  class IssuanceMinting {
+    <<operational domain>>
+    +Issuance and NFT Minting Execution
+    +issueCertificate() validates populated input fields
+    +Verification code uniqueness is enforced by verificationCodeToTokenIdPlusOne
+    +expiryDate must be in the future when expiryDate > 0
+    +New CertificateData is written to certificates[tokenId]
+    +Recipient and issuer token indexes are updated
+    +_safeMint(recipient, tokenId) mints the ERC721 CERT NFT
+    +CertificateIssued is emitted for EVM logs and React UI updates
+  }
+
+  class VerificationRevocation {
+    <<operational domain>>
+    +Programmatic Verification and Revocation Lifecycle
+    +verifyCertificate() verifies by token ID
+    +verifyCertificateByCode() resolves verificationCode to tokenId
+    +View verification queries do not require gas transactions
+    +Existence check uses _ownerOf(tokenId)
+    +Revocation check evaluates CertificateData.isRevoked
+    +Expiry check evaluates block.timestamp > expiryDate
+    +Returns exact states for nonexistent, revoked, expired, and valid certificates
+    +revokeCertificate() can be called by issuerAddress or ADMIN_ROLE
+    +Revocation flips isRevoked while preserving historical state
+  }
+
+  ERC721 <|-- Certificate : inherits
+  AccessControl <|-- Certificate : inherits
+  ERC721Enumerable <|-- Certificate : inherits
+
+  Certificate *-- CertificateData : owns certificate records
+  Certificate ..> TokenLookupState : indexes verification and ownership
+
+  Certificate ..> RBACP : implements
+  Certificate ..> OnChainStorage : implements
+  Certificate ..> IssuanceMinting : implements
+  Certificate ..> VerificationRevocation : implements

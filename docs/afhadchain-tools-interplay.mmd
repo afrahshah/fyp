@@ -1,0 +1,50 @@
+flowchart TB
+  %% AfHadChain tools interplay diagram.
+  %% Source figure for docs/afhadchain-tools-interplay.png.
+  %% Repo-specific stack: Ethereum Sepolia/Hardhat with fully on-chain certificate state.
+
+  users["Users<br/>Admin | Issuers | Recipients | Verifiers"]
+
+  subgraph frontend["Front-end"]
+    dapp["AfHadChain DApp Interface<br/>React + Vite"]
+    pages["Application Pages<br/>Admin | Issue | Verify | Gallery | Detail"]
+    metamask["MetaMask Wallet<br/>Account + network selection"]
+  end
+
+  subgraph access["Access tools"]
+    browserProvider["ethers.js BrowserProvider<br/>Signed wallet transactions"]
+    readProvider["ethers.js JsonRpcProvider<br/>Read-only public verification queries"]
+    rpcGateway["Ethereum RPC Gateway<br/>VITE_RPC_URL(S) | dRPC | PublicNode<br/>Hardhat localhost 127.0.0.1:8545"]
+  end
+
+  subgraph backend["Back-end / On-chain Layer"]
+    ethereum["Ethereum Network<br/>Sepolia Testnet / Hardhat Local Dev<br/>ETH gas + EVM execution"]
+    contract["Certificate.sol Smart Contract<br/>ERC721 CERT NFT + ERC721Enumerable<br/>OpenZeppelin AccessControl"]
+    ledger["On-chain Ledger State<br/>CertificateData structs<br/>verificationCode -> tokenId lookup<br/>revocation + expiry status"]
+  end
+
+  users -->|"Use application"| dapp
+  dapp -->|"Route workflows"| pages
+  pages -->|"Connect wallet / role-aware actions"| metamask
+  metamask -->|"Transaction approval<br/>issueCertificate / revokeCertificate<br/>addIssuer / removeIssuer"| browserProvider
+  pages -.->|"Queries<br/>verifyCertificateByCode<br/>getCertificateDetails<br/>gallery reads"| readProvider
+
+  browserProvider -->|"Signed JSON-RPC calls"| rpcGateway
+  readProvider -.->|"Read-only JSON-RPC calls"| rpcGateway
+  rpcGateway -->|"Connect with Ethereum nodes"| ethereum
+
+  ethereum -->|"Contract execution"| contract
+  contract -->|"Mint / verify / revoke / lookup"| ledger
+  ledger -->|"Stored certificate state"| contract
+
+  contract -.->|"Events reflected to front-end<br/>CertificateIssued / CertificateRevoked / role updates"| pages
+  pages -.->|"Verification results reflected to users"| users
+
+  classDef actor fill:#ffffff,stroke:#111111,stroke-width:2px,color:#111111;
+  classDef layer fill:#f8f8f8,stroke:#bdbdbd,stroke-width:2px,color:#111111;
+  classDef box fill:#ffffff,stroke:#111111,stroke-width:2px,color:#111111;
+  classDef primary fill:#ffffff,stroke:#111111,stroke-width:3px,color:#111111;
+
+  class users actor;
+  class dapp,contract primary;
+  class pages,metamask,browserProvider,readProvider,rpcGateway,ethereum,ledger box;
