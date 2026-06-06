@@ -17,7 +17,7 @@ export default function Navbar() {
       <div className="navbar-container">
         <Link to="/" className="navbar-brand">
           <span className="brand-icon">🎓</span>
-          <span className="brand-text">CertChain</span>
+          <span className="brand-text">AfHadChain</span>
         </Link>
 
         <div className="navbar-links">
