@@ -23,62 +23,62 @@ A fully decentralized credential management system built natively on the Ethereu
 
 ### 1. Main Dashboard
 
-![Dashboard Panel](./screenshots/dashboard.png)
+![Dashboard Panel](./Screenshots/dashboard.png)
 _The landing page welcoming users to connect with your specific wallet._
 
 ### 2. Admin Dashboard Overview
 
-![Admin Panel](./screenshots/admin_panel.png)
+![Admin Panel](./Screenshots/admin_panel.png)
 _The centralized control center restricted to system administrators for managing Issuing Authorities ._
 
 ### 3. Issuer Management (Add/Remove)
 
-![Admin's Admin Panel showing Add and Remove Issuer functionalities](./screenshots/admin_add_removeIssuer.png)
+![Admin's Admin Panel showing Add and Remove Issuer functionalities](./Screenshots/admin_add_removeIssuer.png)
 _The administrative interface for authorizing new university wallets or revoking existing institutional permissions._
 
 ### 4. Role Verification Tools
 
-![Admin's Admin Panel showing check_role functionality](./screenshots/admin_checkRole.png)
+![Admin's Admin Panel showing check_role functionality](./Screenshots/admin_checkRole.png)
 _A dedicated utility for inputting any cryptographic address to check its current access level (Admin, Issuer, or None)._
 
 ### 5. Issuance Interface Overview
 
-![Admin's Issue Panel](./screenshots/admin_issue_panel.png)
+![Admin's Issue Panel](./Screenshots/admin_issue_panel.png)
 _The main portal for authorized entities to prepare new academic credentials for secure on-chain deployment._
 
 ### 6. Certificate Configuration Fields
 
-![Certificate Issuing Fields](./screenshots/admin_issue.png)
+![Certificate Issuing Fields](./Screenshots/admin_issue.png)
 _The data entry form for defining recipient metadata, achievement names, institutional details, and optional expiration limits._
 
 ### 7. Administrative Records View
 
-![Admin Gallery Panel](./screenshots/admin_gallery.png)
+![Admin Gallery Panel](./Screenshots/admin_gallery.png)
 _An elevated gallery filter allowing administrators to monitor all smart contract activities, active tokens, and global history._
 
 ### 8. Authorized Issuer Portal
 
-![Issuer Panel](./screenshots/issuer1.png)
+![Issuer Panel](./Screenshots/issuer1.png)
 _The secure workspace tailored for verified academic institutions to sign transactions and distribute credentials._
 
 ### 9. Public Verifier Interface
 
-![Public Verifier Panel](./screenshots/public_verifier.png)
+![Public Verifier Panel](./Screenshots/public_verifier.png)
 _A global, wallet-free lookup page allowing anyone to instantly check a credential using its unique public verification code._
 
 ### 10. Expired Status Resolution
 
-![Verification result for expired certificate](./screenshots/verifier_result_expired.png)
+![Verification result for expired certificate](./Screenshots/verifier_result_expired.png)
 _The real-time interface indicating a certificate that has successfully passed validity verification but has crossed its preset calendar expiration timestamp._
 
 ### 11. Revoked Status Alert
 
-![Verification result for revoked certificate](./screenshots/verifier_result_revoked.png)
+![Verification result for revoked certificate](./Screenshots/verifier_result_revoked.png)
 _The critical cryptographic flag highlighting a certificate that has been intentionally cancelled and invalidated by its issuer or Admin ._
 
 ### 12. Valid Status Authentication
 
-![Verification result for valid certificate](./screenshots/verifier_result_valid.png)
+![Verification result for valid certificate](./Screenshots/verifier_result_valid.png)
 _The success screen displaying fully authenticated data, real-time contract confirmations, and absolute semantic validity directly from the Ethereum block._
 
 ## 📋 Prerequisites
