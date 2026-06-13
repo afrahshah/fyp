@@ -111,7 +111,10 @@ The platform operates as a fully decentralized application (dApp), ensuring abso
 The results are much better than the already existing architectures eg ElimuChain ( accepetd in Feb 2025)
 
 ### 1. Authenticated & Valid Certificate
-![System Results- throughput , cost , latency](./docs/results)
+1, ![System Results- Certificate Issuance Cost](./docs/results/issue-cost-sepolia.png)
+2, ![System Results- Certificate Issuance Latency](./docs/results/issue-latency-sepolia.png)
+3, ![System Results- Certificate Issuance Throughput](./docs/results/throughput-sepolia.png)
+4, ![System Results- Cost for different functionalities in AfHadChain](./docs/results/operation-fees-sepolia.png)
 
 
 
