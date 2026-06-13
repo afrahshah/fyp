@@ -1,6 +1,24 @@
 # 🎓 AfHadChain: Pure On-Chain Credential System
 
-A fully decentralized credential management system built natively on the Ethereum blockchain. It eliminates third-party storage dependencies by storing 100% of certificate data on-chain. Built with Hardhat, Solidity, React, and ethers.js.
+The proliferation of fraudulent academic credentials poses a severe threat to global
+educational and professional integrity. Current digital verification systems predominantly
+rely on hybrid blockchain architectures, utilizing third-party decentralized storage networks
+like IPFS. While functional, these systems introduce severe latency, high transaction costs,
+and a reliance on external gateways that act as single points of failure.
+To address these vulnerabilities, this project introduces AfHadChain, a pure on-
+chain, fully decentralized credential management system engineered natively on the
+Ethereum blockchain. By leveraging strict EVM struct-packing with bytes32 data
+types, AfHadChain completely eradicates off-chain storage dependencies, embedding
+comprehensive certificate metadata natively into the blockchain state. The system
+features a dynamic client-side rendering engine, real-time automatic status updates for
+time-limited certificates, and a selective disclosure framework ensuring complete student
+data sovereignty.
+Empirical evaluations conducted on the Ethereum Sepolia Testnet demonstrate that
+AfHadChain achieves single-block confirmation (11.95 seconds) and significantly outper-
+forms previous hybrid baselines in administrative gas efficiency, maintaining a highly
+scalable transaction throughput. Ultimately, this thesis proves that absolute on-chain
+data independence is both economically viable and operationally superior, establishing a
+universally uniform standard for next-generation credential issuance and verification.
 
 ## ✨ Features
 
