@@ -24,7 +24,7 @@ A fully decentralized credential management system built natively on the Ethereu
 ### 1. Main Dashboard
 
 ![Dashboard Panel](./screenShots/dashboard.png)
-_The landing page welcoming users to connect with your specific wallet._
+_The landing page welcoming users to connect with their specific wallet._
 
 ### 2. Admin Dashboard Overview
 
