@@ -99,6 +99,22 @@ _The critical cryptographic flag highlighting a certificate that has been intent
 ![Verification result for valid certificate](./screenShots/verifier_result_valid.png)
 _The success screen displaying fully authenticated data, real-time contract confirmations, and absolute semantic validity directly from the Ethereum block._
 
+
+## 🏗️ System Architecture
+
+The platform operates as a fully decentralized application (dApp), ensuring absolute data integrity by keeping 100% of the certificate generation and verification processes directly on-chain.
+
+![System Architecture](./docs/architecture-diagram.png)
+
+## 📊 System Results 
+
+The results are much better than the already existing architectures eg ElimuChain ( accepetd in Feb 2025)
+
+### 1. Authenticated & Valid Certificate
+![System Results- throughput , cost , latency](./docs/results)
+
+
+
 ## 📋 Prerequisites
 
 - [Node.js](https://nodejs.org/) (v18 or higher)
